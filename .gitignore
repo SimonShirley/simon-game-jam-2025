@@ -398,3 +398,9 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Project specific ignores
+build
+.vscode/c_cpp_properties.json
+.DS_Store
+dist

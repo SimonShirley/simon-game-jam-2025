@@ -1,0 +1,13 @@
+{
+    "name": "simon-game-jam-2025",
+    "description": "Project simon-game-jam-2025",
+    "toolkit": "basic",
+    "sources": [
+        "src/main.bas"
+    ],
+    "build": "debug",
+    "definitions": [],
+    "includes": [],
+    "args": [],
+    "compiler": ""
+}
