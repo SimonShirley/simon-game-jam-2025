@@ -25,25 +25,35 @@ Ready_Up_Next_Sequence:
 
     PRINT "{clr}{home}" : REM Clear the screen
 
-    FOR I = 0 TO NC
+    FOR I = 0 TO NC    
     PRINT STR$(PA%(I));
-    PRINT SPC(1);
+    FOR J = 0 TO 300 : NEXT J
+    PRINT "{clr}{home}" : REM Clear the screen
+    FOR J = 0 TO 300 : NEXT J
     NEXT I
 
     PRINT
     PRINT
-    PRINT "Enter the sequence"
+    PRINT "Enter the sequence:"
 
 Game_Loop:
     GET K$ : IF K$ = "" THEN Game_Loop
 
+    PRINT K$;
+
     IF VAL(K$) <> PA%(CC) THEN Game_Over
-    IF NC = MX THEN Game_Over : REM End game because the array is set to 50
+    IF CC = MX - 1 THEN PRINT : PRINT "YOU WIN" : END : REM End game because the array is set to 50
     IF CC = NC THEN Ready_Up_Next_Sequence : REM Increase Sequence Game Loop
     CC = CC + 1 : REM Increment current guess counter
 
     GOTO Game_Loop
 
 Game_Over:
+    PRINT 
+    PRINT "The correct sequence was "
+    FOR I = 0 TO NC    
+    PRINT STR$(PA%(I));
+    NEXT I
+    PRINT
     PRINT "Game Over"
     END
