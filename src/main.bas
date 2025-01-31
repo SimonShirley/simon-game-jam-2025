@@ -24,6 +24,13 @@ Generate_Random:
     RD% = INT(RND(1) * 4) + 1
     RETURN
 
+Set_Cursor_Position:
+    REM Set Cursor Position to X=XP%, Y=YP%
+    REM Clear Flags
+    REM CALL PLOT kernal routine
+    POKE 781,YP% : POKE 782,XP% : POKE 783,0 : SYS 65520
+    RETURN
+
 Initialise_Program:
     PRINT "{clr}{home}" : REM Clear the screen
     MX = 20 : REM Max Pattern Length
@@ -31,6 +38,9 @@ Initialise_Program:
     RD% = RND(-TI) : REM re-seed the random generator   
 
     GOSUB Initialise_Sprites
+    GOSUB Game_Screen
+    GOSUB Print_Instructions
+    GOSUB Print_Score
 
 Restart:
     REM Empty sequence
@@ -44,7 +54,7 @@ Ready_Up_Next_Sequence:
 
     GOSUB Generate_Random : REM Generate Random
     PA%(NC) = RD% : REM Store random number in sequence array
-
+    GOTO Game_Loop
     PRINT "{clr}{home}" : REM Clear the screen
 
     FOR I = 0 TO NC    
@@ -95,10 +105,10 @@ Initialise_Sprites:
     POKE VL+29,255 : POKE VL+23,255: rem width & height    
     
     REM Sprite Colours
-    POKE VL+39,10
-    POKE VL+40,13
-    POKE VL+41,7
-    POKE VL+42,14
+    POKE VL+39,2 : REM 10 = Light
+    POKE VL+40,5 : REM 13 = Light
+    POKE VL+41,6 : REM 14 = Light
+    POKE VL+42,7 : REM 1 = Light
     
     REM Set Sprite Data
     FOR X = 0 TO 0
@@ -109,22 +119,85 @@ Initialise_Sprites:
     NEXT Y
     NEXT X
 
-    POKE VL+16,0 : REM Disable Sprites MSB (for x pos)
-    POKE VL,32 : POKE VL+1,58: rem sprite 0 pos
-    POKE VL+2,32+48 : POKE VL+3,58: rem sprite 1 pos
-    POKE VL+4,32 : POKE VL+5,58+40: rem sprite 0 pos
-    POKE VL+6,32+48 : POKE VL+7,58+40: rem sprite 1 pos
+    POKE VL+16,10 : REM Enable Sprites MSB 0000 1010 (for x pos)
+    POKE VL,24+(24*8) : POKE VL+1,82: rem sprite 0 pos
+    POKE VL+2,24 : POKE VL+3,82: rem sprite 1 pos
+    POKE VL+4,24+(24*8) : POKE VL+5,146: rem sprite 2 pos
+    POKE VL+6,24 : POKE VL+7,146: rem sprite 3 pos
 
     FOR X = 0 TO 3
     POKE SP + X, SL
     NEXT X
 
 
-    POKE VL+21,0 : rem set sprites 0-3 visible
+    POKE VL+21,31 : rem set sprites 0-3 visible
 
     RETURN
 
 #---------------------
+
+Game_Screen:
+    POKE 53281,0
+
+    REM Instructions
+    PRINT "{clr}{home}"
+    PRINT
+    PRINT
+    PRINT "   {pink}{162}{187}{lightgreen}{187}"
+    PRINT "   {pink}{rvs on}{252}{rvs off}{187}{lightgreen}{187}{yellow}{162}{172}{187}{cyan}{162}{187}{white}{162}{187}"
+    PRINT "   {pink}{162}{161}{lightgreen}{161}{yellow}{161}{190}{161}{cyan}{rvs on}{188}{rvs off}{161}{white}{161}{161}"
+    PRINT
+    PRINT "   {purple}{rvs on}{162}{162}{162}{162}{162}{162}{162}{162}{162}{rvs off}{190}"
+
+    REM Colour Boxes
+    XP% = 23 : YP% = 3 : GOSUB Set_Cursor_Position
+    PRINT "{red}{176}     {174} {green}{176}     {174}"
+
+    XP% = 23 : YP% = 6 : GOSUB Set_Cursor_Position
+    PRINT "   {black}Q       W"
+    
+    XP% = 23 : YP% = 9 : GOSUB Set_Cursor_Position
+    PRINT "{red}{173}     {189} {green}{173}     {189}"
+
+    XP% = 23 : YP% = 11 : GOSUB Set_Cursor_Position
+    PRINT "{blue}{176}     {174} {lightgreen}{176}     {174}"
+
+    XP% = 23 : YP% = 14 : GOSUB Set_Cursor_Position
+    PRINT "   {black}A       S"
+
+    XP% = 23 : YP% = 17 : GOSUB Set_Cursor_Position
+    PRINT "{blue}{173}     {189} {lightgreen}{173}     {189}"
+
+    REM AltoFluff
+    XP% = 23 : YP% = 20 : GOSUB Set_Cursor_Position    
+    PRINT "{brown}{rvs on}{172}{rvs off}{161}{161}{188}{rvs on}{172}{161}{187}{brown}{rvs off}{188}{rvs on}{162}{162}{162}{162}{162}{162}{162}{rvs off}"
+    
+    XP% = 23 : YP% = 21 : GOSUB Set_Cursor_Position
+    PRINT "{brown}{rvs on}{172}{rvs off}{161}{rvs on}{188}{rvs off} {161}{rvs on}{161}{190}{rvs off}{orange}{rvs on}{161}{rvs off}{190}{161}{rvs on}{161}{161}{161}{rvs off}{190}{rvs on}{172}{rvs off}"
+
+    XP% = 23 : YP% = 22 : GOSUB Set_Cursor_Position
+    PRINT "{orange}{162}{162}{162}{162}{162}{162}{162}{orange}{rvs on}{161}{rvs off}{190}{rvs on}{188}{161}{190}{161}{rvs off}{190}{rvs on}{172}{rvs off}"
+    PRINT "{black}{home}"
+
+    RETURN
+
+Print_Instructions:
+    XP% = 0 : YP% = 10 : GOSUB Set_Cursor_Position
+    PRINT "   {white}Watch the"
+    PRINT 
+    PRINT "   Sequence Closely"
+    PRINT
+    PRINT "   Then Replicate"
+
+    RETURN
+
+Print_Score:
+    XP% = 0 : YP% = 20 : GOSUB Set_Cursor_Position
+    PRINT "   {white}Length: ";PL%
+    PRINT
+    PRINT "   High Score: ";HI%
+
+    RETURN
 
 Sprite_Data:
     :: rem sprite_box / singlecolor / color: 1

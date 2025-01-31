@@ -3,7 +3,7 @@
     "description": "Project simon-game-jam-2025",
     "toolkit": "basic",
     "sources": [
-        "src/Game Screen.bas"
+        "src/main.bas"
     ],
     "build": "debug",
     "definitions": [],
