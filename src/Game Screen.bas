@@ -19,7 +19,7 @@
     PRINT "                      {blue}{173}     {189} {lightgreen}{173}     {189}"
     PRINT
     PRINT
-    PRINT "                      {brown}{rvs on}{172}{rvs off}{161}{161}{188}{rvs on}{172}{161}{187}{rvs off}{orange}{rvs on}{161}{rvs off}{190}{161}{rvs on}{161}{161}{161}{rvs off}{190}{rvs on}{172}{rvs off}"
-    PRINT "                      {brown}{rvs on}{172}{rvs off}{161}{rvs on}{188}{rvs off} {161}{rvs on}{161}{190}{rvs off}{orange}{rvs on}{161}{rvs off}{190}{rvs on}{188}{161}{190}{161}{rvs off}{190}{rvs on}{172}{rvs off}"
-    PRINT "                      {orange}{162}{162}{162}{162}{162}{162}{162}{brown}{172}{162}{162}{162}{162}{162}{162}{162}{orange}"
+    PRINT "                      {brown}{rvs on}{172}{rvs off}{161}{161}{188}{rvs on}{172}{161}{187}{brown}{rvs off}{188}{rvs on}{162}{162}{162}{162}{162}{162}{162}{rvs off}"
+    PRINT "                      {brown}{rvs on}{172}{rvs off}{161}{rvs on}{188}{rvs off} {161}{rvs on}{161}{190}{rvs off}{orange}{rvs on}{161}{rvs off}{190}{161}{rvs on}{161}{161}{161}{rvs off}{190}{rvs on}{172}{rvs off}"
+    PRINT "                      {orange}{162}{162}{162}{162}{162}{162}{162}{orange}{rvs on}{161}{rvs off}{190}{rvs on}{188}{161}{190}{161}{rvs off}{190}{rvs on}{172}{rvs off}"
     PRINT "{black}{home}"
