@@ -21,7 +21,7 @@ CLR
 GOTO Initialise_Program
 
 Generate_Random:
-    RD% = INT(RND(1) * 4) + 1
+    RD% = INT(RND(1) * 4)
     RETURN
 
 Set_Cursor_Position:
@@ -32,10 +32,29 @@ Set_Cursor_Position:
     RETURN
 
 Initialise_Program:
+    POKE 53280,0 : POKE 53281,0
     PRINT "{clr}{home}" : REM Clear the screen
     MX = 20 : REM Max Pattern Length
     DIM PA%(MX) : REM Pattern Array
-    RD% = RND(-TI) : REM re-seed the random generator   
+    RD% = RND(-TI) : REM re-seed the random generator
+
+Cell_Colours:
+    DIM CC%(3,3) : REM Cell Colours
+
+    CC%(0, 0) = 2 : CC%(0, 1) = 10
+    CC%(1, 0) = 5 : CC%(1, 1) = 13
+    CC%(2, 0) = 6 : CC%(2, 1) = 14
+    CC%(3, 0) = 7 : CC%(3, 1) = 1
+
+Keyboard_Keys:
+    DIM KK$(3)
+
+    KK$(0) = "Q"
+    KK$(1) = "W"
+    KK$(2) = "A"
+    KK$(3) = "S"
+
+#--------------
 
     GOSUB Initialise_Sprites
     GOSUB Game_Screen
@@ -54,26 +73,22 @@ Ready_Up_Next_Sequence:
 
     GOSUB Generate_Random : REM Generate Random
     PA%(NC) = RD% : REM Store random number in sequence array
-    GOTO Game_Loop
-    PRINT "{clr}{home}" : REM Clear the screen
 
     FOR I = 0 TO NC    
-    PRINT STR$(PA%(I));
+    POKE VL+39+PA%(I), CC%(PA%(I), 1)
     FOR J = 0 TO 300 : NEXT J
-    PRINT "{clr}{home}" : REM Clear the screen
+    POKE VL+39+PA%(I), CC%(PA%(I), 0)
     FOR J = 0 TO 300 : NEXT J
     NEXT I
 
-    PRINT
-    PRINT
-    PRINT "Enter the sequence:"
-
 Game_Loop:
     GET K$ : IF K$ = "" THEN Game_Loop
+    K% = -1
+    FOR I = 0 TO 3
+    IF K$ = KK$(I) THEN K% = I : I = 99
+    NEXT
 
-    PRINT K$;
-
-    IF VAL(K$) <> PA%(CC) THEN Game_Over
+    IF K% <> PA%(CC) THEN Game_Over
     IF CC = MX - 1 THEN PRINT : PRINT "YOU WIN" : END : REM End game because the array is set to 50
     IF CC = NC THEN Ready_Up_Next_Sequence : REM Increase Sequence Game Loop
     CC = CC + 1 : REM Increment current guess counter
@@ -105,10 +120,7 @@ Initialise_Sprites:
     POKE VL+29,255 : POKE VL+23,255: rem width & height    
     
     REM Sprite Colours
-    POKE VL+39,2 : REM 10 = Light
-    POKE VL+40,5 : REM 13 = Light
-    POKE VL+41,6 : REM 14 = Light
-    POKE VL+42,7 : REM 1 = Light
+    FOR I = 0 TO 3 : POKE VL+39+I,CC%(I, 0) : NEXT
     
     REM Set Sprite Data
     FOR X = 0 TO 0
@@ -129,7 +141,6 @@ Initialise_Sprites:
     POKE SP + X, SL
     NEXT X
 
-
     POKE VL+21,31 : rem set sprites 0-3 visible
 
     RETURN
@@ -137,8 +148,6 @@ Initialise_Sprites:
 #---------------------
 
 Game_Screen:
-    POKE 53281,0
-
     REM Instructions
     PRINT "{clr}{home}"
     PRINT
