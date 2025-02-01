@@ -31,6 +31,28 @@ Set_Cursor_Position:
     POKE 781,YP% : POKE 782,XP% : POKE 783,0 : SYS 65520
     RETURN
 
+Turn_On_Sprite:
+    REM SN% = Sprite Number to Enable
+    POKE VL+39+SN%, CC%(SN%, 1)
+    RETURN
+
+Turn_Off_Sprite:
+    REM SN% = Sprite Number to Enable
+    POKE VL+39+SN%, CC%(SN%, 0)
+    RETURN
+
+Wait_Delay:
+    FOR J = 0 TO FD% : NEXT J : RETURN
+
+Flash_Sprite:
+    REM SN% = Sprite Number to Enable
+    GOSUB Turn_On_Sprite
+    GOSUB Wait_Delay
+    GOSUB Turn_Off_Sprite
+    GOSUB Wait_Delay
+
+    RETURN
+
 Initialise_Program:
     POKE 53280,0 : POKE 53281,0
     PRINT "{clr}{home}" : REM Clear the screen
@@ -68,29 +90,45 @@ Restart:
     NC = -1 : REM Next sequence counter
 
 Ready_Up_Next_Sequence:
+    POKE 649,0 : REM Disable Keyboard Buffer
     NC = NC + 1 : REM Move next counter along
     CC = 0 : REM Current sequence counter
 
     GOSUB Generate_Random : REM Generate Random
     PA%(NC) = RD% : REM Store random number in sequence array
 
+    FD% = 300 : REM Set Flash Sprite Delay
+
     FOR I = 0 TO NC    
-    POKE VL+39+PA%(I), CC%(PA%(I), 1)
-    FOR J = 0 TO 300 : NEXT J
-    POKE VL+39+PA%(I), CC%(PA%(I), 0)
-    FOR J = 0 TO 300 : NEXT J
+    SN% = PA%(I) : GOSUB Flash_Sprite
     NEXT I
 
-Game_Loop:
+    POKE 649,10 : REM Set keyboard buffer size to 10
+    POKE 631,0 : REM Set remaining keyboard keys buffer to 0
+
+Game_Loop:    
+    FD% = 75 : REM Set Flash Sprite Delay
+
+Get_Next_Key:
     GET K$ : IF K$ = "" THEN Game_Loop
+
     K% = -1
     FOR I = 0 TO 3
     IF K$ = KK$(I) THEN K% = I : I = 99
     NEXT
 
+    REM Flash the user's input
+    IF K% < 0 OR K% > 3 THEN GOTO Get_Next_Key
+    
+    SN% = K% : GOSUB Flash_Sprite
+
     IF K% <> PA%(CC) THEN Game_Over
     IF CC = MX - 1 THEN PRINT : PRINT "YOU WIN" : END : REM End game because the array is set to 50
-    IF CC = NC THEN Ready_Up_Next_Sequence : REM Increase Sequence Game Loop
+
+    REM Increase Sequence Game Loop
+    FD% = 500 : REM Set Flash Sprite Delay
+    IF CC = NC THEN GOSUB Wait_Delay : GOTO Ready_Up_Next_Sequence
+
     CC = CC + 1 : REM Increment current guess counter
 
     GOTO Game_Loop
@@ -99,10 +137,11 @@ Game_Over:
     PRINT 
     PRINT "The correct sequence was "
     FOR I = 0 TO NC    
-    PRINT STR$(PA%(I));
+    PRINT KK$(PA%(I));
     NEXT I
     PRINT
     PRINT "Game Over"
+    POKE 649,10 : REM Set keyboard buffer size to 10
     END
 
 Setup_Sprites:
