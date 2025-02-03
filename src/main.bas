@@ -202,7 +202,7 @@ Game_Screen:
     PRINT "{red}{176}     {174} {green}{176}     {174}"
 
     XP% = 23 : YP% = 6 : GOSUB Set_Cursor_Position
-    PRINT "   {black}Q       W"
+    PRINT "   {white}Q       W"
     
     XP% = 23 : YP% = 9 : GOSUB Set_Cursor_Position
     PRINT "{red}{173}     {189} {green}{173}     {189}"
@@ -211,7 +211,7 @@ Game_Screen:
     PRINT "{blue}{176}     {174} {lightgreen}{176}     {174}"
 
     XP% = 23 : YP% = 14 : GOSUB Set_Cursor_Position
-    PRINT "   {black}A       S"
+    PRINT "   {white}A       S"
 
     XP% = 23 : YP% = 17 : GOSUB Set_Cursor_Position
     PRINT "{blue}{173}     {189} {lightgreen}{173}     {189}"
@@ -250,6 +250,6 @@ Print_Score:
 Sprite_Data:
     :: rem sprite_box / singlecolor / color: 1
     data 255,255,240,255,255,240,255,255,240,255,255,240,255,255,240,255
-    data 255,240,255,255,240,255,255,240,255,255,240,255,255,240,255,255
-    data 240,255,255,240,255,255,240,255,255,240,255,255,240,255,255,240
+    data 255,240,252,3,240,252,3,240,252,3,240,252,3,240,252,3
+    data 240,252,3,240,252,3,240,252,3,240,255,255,240,255,255,240
     data 255,255,240,255,255,240,255,255,240,255,255,240,0,0,0,1
