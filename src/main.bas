@@ -68,6 +68,13 @@ Flash_Sprite:
 
     RETURN
 
+Increment_Score:
+    REM Increment Score and Set High Score
+    SC% = SC% + 1
+    IF SC% >= HI% THEN HI% = SC%
+
+    GOSUB Print_Score
+    RETURN
 
 Initialise_Program:
     POKE 53280,0 : POKE 53281,0
@@ -124,11 +131,7 @@ Ready_Up_Next_Sequence:
     NC = NC + 1 : REM Move next counter along
     CC = 0 : REM Current sequence counter
 
-    REM Increment Score and Set High Score
-    SC% = SC% + 1
-    IF SC% >= HI% THEN HI% = SC%
-    GOSUB Print_Score
-
+    GOSUB Increment_Score
     GOSUB Print_Instructions__Watch_Clearly
     
     FD% = 300 : REM Set Flash Sprite Delay
@@ -163,7 +166,9 @@ Get_Next_Key:
     SN% = K% : GOSUB Flash_Sprite
 
     IF K% <> PA%(CC) THEN Game_Over
-    IF CC = MX - 1 THEN PRINT : PRINT "YOU WIN" : END : REM End game because the array is set to 50
+
+    REM End game because the array is set to 20
+    IF CC = MX - 1 THEN End_Game
 
     REM Increase Sequence Game Loop
     FD% = 500 : REM Set Flash Sprite Delay
@@ -175,7 +180,14 @@ Get_Next_Key:
 
 Game_Over:
     GOSUB Print_Instructions__Correct_Sequence
+    GOTO Pre_Restart
+
+End_Game:
+    GOSUB Increment_Score
+    GOSUB Print_Instructions__Win
+    GOTO Pre_Restart
     
+Pre_Restart:
     FD% = 2000
     GOSUB Wait_Delay
     GOTO Restart
@@ -293,6 +305,21 @@ Print_Instructions__Your_Turn:
     PRINT "   {white}Repeat the"
     PRINT
     PRINT "   Sequence"
+
+    RETURN
+
+Print_Instructions__Win:
+    GOSUB Print_Instructions__Blank
+
+    XP% = 0 : YP% = 10 : GOSUB Set_Cursor_Position
+    
+    PRINT "   {white}Congratulations"
+    PRINT
+    PRINT
+    PRINT
+    PRINT "   You Completed"
+    PRINT
+    PRINT "   The Sequence!"
 
     RETURN
 
