@@ -109,7 +109,7 @@ Initialise_Sound:
 
     GOSUB Initialise_Sprites
     GOSUB Game_Screen
-    GOSUB Print_Instructions
+    GOSUB Print_Instructions__Watch_Clearly
     GOSUB Print_Score
 
 Restart:
@@ -123,10 +123,13 @@ Ready_Up_Next_Sequence:
     NC = NC + 1 : REM Move next counter along
     CC = 0 : REM Current sequence counter
 
-    GOSUB Generate_Random : REM Generate Random
-    PA%(NC) = RD% : REM Store random number in sequence array
-
+    GOSUB Print_Instructions__Watch_Clearly
+    
     FD% = 300 : REM Set Flash Sprite Delay
+    GOSUB Wait_Delay
+
+    GOSUB Generate_Random : REM Generate Random
+    PA%(NC) = RD% : REM Store random number in sequence array    
 
     FOR I = 0 TO NC    
     SN% = PA%(I) : GOSUB Flash_Sprite
@@ -134,6 +137,8 @@ Ready_Up_Next_Sequence:
 
     POKE 649,10 : REM Set keyboard buffer size to 10
     POKE 631,0 : REM Set remaining keyboard keys buffer to 0
+
+    GOSUB Print_Instructions__Your_Turn
 
 Game_Loop:    
     FD% = 75 : REM Set Flash Sprite Delay
@@ -163,13 +168,7 @@ Get_Next_Key:
     GOTO Game_Loop
 
 Game_Over:
-    PRINT 
-    PRINT "The correct sequence was "
-    FOR I = 0 TO NC    
-    PRINT KK$(PA%(I));
-    NEXT I
-    PRINT
-    PRINT "Game Over"
+    GOSUB Print_Instructions__Correct_Sequence
     POKE 649,10 : REM Set keyboard buffer size to 10
     END
 
@@ -254,25 +253,72 @@ Game_Screen:
 
     XP% = 23 : YP% = 22 : GOSUB Set_Cursor_Position
     PRINT "{orange}{162}{162}{162}{162}{162}{162}{162}{orange}{rvs on}{161}{rvs off}{190}{rvs on}{188}{161}{190}{161}{rvs off}{190}{rvs on}{172}{rvs off}"
-    PRINT "{black}{home}"
 
     RETURN
 
-Print_Instructions:
+Print_Instructions__Blank:
     XP% = 0 : YP% = 10 : GOSUB Set_Cursor_Position
+    
+    FOR BL = 0 TO 9
+    PRINT "                       "
+    NEXT BL
+
+    RETURN
+
+Print_Instructions__Watch_Clearly:
+    GOSUB Print_Instructions__Blank
+    
+    XP% = 0 : YP% = 10 : GOSUB Set_Cursor_Position
+    
     PRINT "   {white}Watch the"
-    PRINT 
-    PRINT "   Sequence Closely"
     PRINT
-    PRINT "   Then Replicate"
+    PRINT "   Sequence Closely"
+
+    RETURN
+
+Print_Instructions__Your_Turn:
+    GOSUB Print_Instructions__Blank
+    
+    XP% = 0 : YP% = 10 : GOSUB Set_Cursor_Position
+    
+    PRINT "   {white}Repeat the"
+    PRINT
+    PRINT "   Sequence"
+
+    RETURN
+
+Print_Instructions__Correct_Sequence:
+    GOSUB Print_Instructions__Blank
+
+    LN = 13
+    XP% = 0 : YP% = 10 : GOSUB Set_Cursor_Position    
+    
+    PRINT "   {white}The Correct"
+    PRINT
+    PRINT "   Sequence Was: "
+    PRINT
+
+    PC = 0
+    PL = 8 : REM PL : Print per line
+    
+    FOR J = 0 TO NC STEP PL
+    IF (NC - PC) < PL THEN PL = NC - PC + 1
+Print_Loop:
+    PRINT "   ";
+    FOR I = 0 TO PL - 1
+    PRINT KK$(PA%(PC));" ";
+    PC = PC + 1
+    NEXT I
+    PRINT
+    NEXT J
 
     RETURN
 
 Print_Score:
     XP% = 0 : YP% = 20 : GOSUB Set_Cursor_Position
-    PRINT "   {white}Length: ";PL%
+    PRINT "   {white}Score      : ";PL%
     PRINT
-    PRINT "   High Score: ";HI%
+    PRINT "   High Score : ";HI%
 
     RETURN
 
