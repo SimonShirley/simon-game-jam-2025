@@ -34,6 +34,7 @@ Set_Cursor_Position:
 Turn_On_Sprite:
     REM SN% = Sprite Number to Enable
     POKE VL+39+SN%, CC%(SN%, 1)
+
     RETURN
 
 Turn_Off_Sprite:
@@ -41,17 +42,32 @@ Turn_Off_Sprite:
     POKE VL+39+SN%, CC%(SN%, 0)
     RETURN
 
+Start_Sound:
+    POKE SR + 1, CS%(SN%,0) : POKE SR, CS%(SN%,1) : REM Poke Note Frequency
+    POKE SR + 4, 33 : REM GATE(1) + SAWTOOTH(32)
+    RETURN
+
+Stop_Sound:
+    POKE SR + 4, 32 : REM GATE(0) + SAWTOOTH(32)
+    RETURN
+
 Wait_Delay:
     FOR J = 0 TO FD% : NEXT J : RETURN
 
 Flash_Sprite:
     REM SN% = Sprite Number to Enable
-    GOSUB Turn_On_Sprite
-    GOSUB Wait_Delay
-    GOSUB Turn_Off_Sprite
-    GOSUB Wait_Delay
+    GOSUB Turn_On_Sprite : REM Turn On Sprite
+    GOSUB Start_Sound : REM Start Sound
+
+    GOSUB Wait_Delay : REM Wait
+    
+    GOSUB Stop_Sound : REM Turn Off Sound
+    GOSUB Turn_Off_Sprite : REM Turn Off Sprite    
+    
+    GOSUB Wait_Delay : REM Wait
 
     RETURN
+
 
 Initialise_Program:
     POKE 53280,0 : POKE 53281,0
@@ -75,6 +91,19 @@ Keyboard_Keys:
     KK$(1) = "W"
     KK$(2) = "A"
     KK$(3) = "S"
+
+Initialise_Sound:
+    DIM CS%(3,1) : REM Cell Sound
+
+    CS%(0,0) = 22 : CS%(0,1) = 96
+    CS%(1,0) = 28 : CS%(1,1) = 49
+    CS%(2,0) = 33 : CS%(2,1) = 135
+    CS%(3,0) = 44 : CS%(3,1) = 193
+
+    SR = 54272 : REM SID BASE ADDRESS
+    FOR I = SR TO SR + 24 : POKE I,0 : NEXT : REM Reset SID
+    POKE SR + 5,9 : POKE SR + 6,0 : REM SET ADSR ENVELOPE
+    POKE SR + 24,15 : REM SET MAX VOLUME
 
 #--------------
 
