@@ -117,16 +117,22 @@ Restart:
     FOR I = 0 TO MX : PA%(I) = 0 : NEXT
 
     NC = -1 : REM Next sequence counter
+    SC% = -1 : REM Reset Score
 
 Ready_Up_Next_Sequence:
     POKE 649,0 : REM Disable Keyboard Buffer
     NC = NC + 1 : REM Move next counter along
     CC = 0 : REM Current sequence counter
 
+    REM Increment Score and Set High Score
+    SC% = SC% + 1
+    IF SC% >= HI% THEN HI% = SC%
+    GOSUB Print_Score
+
     GOSUB Print_Instructions__Watch_Clearly
     
     FD% = 300 : REM Set Flash Sprite Delay
-    GOSUB Wait_Delay
+    GOSUB Wait_Delay    
 
     GOSUB Generate_Random : REM Generate Random
     PA%(NC) = RD% : REM Store random number in sequence array    
@@ -169,8 +175,11 @@ Get_Next_Key:
 
 Game_Over:
     GOSUB Print_Instructions__Correct_Sequence
-    POKE 649,10 : REM Set keyboard buffer size to 10
-    END
+    
+    FD% = 2000
+    GOSUB Wait_Delay
+    GOTO Restart
+
 
 Setup_Sprites:
 Initialise_Sprites:
@@ -316,9 +325,21 @@ Print_Loop:
 
 Print_Score:
     XP% = 0 : YP% = 20 : GOSUB Set_Cursor_Position
-    PRINT "   {white}Score      : ";PL%
+    PRINT "   {white}Score      : "
     PRINT
-    PRINT "   High Score : ";HI%
+    PRINT "   High Score : "
+
+    XP% = 16 : YP% = 20 : GOSUB Set_Cursor_Position
+    PRINT "   "
+
+    XP% = 16 : YP% = 22 : GOSUB Set_Cursor_Position
+    PRINT "   "
+
+    XP% = 16 : YP% = 20 : GOSUB Set_Cursor_Position
+    PRINT SC%
+
+    XP% = 16 : YP% = 22 : GOSUB Set_Cursor_Position
+    PRINT HI%
 
     RETURN
 
