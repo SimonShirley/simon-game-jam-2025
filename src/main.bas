@@ -296,6 +296,9 @@ Game_Screen:
     XP% = 23 : YP% = 22 : GOSUB Set_Cursor_Position
     PRINT "{orange}{162}{162}{162}{162}{162}{162}{162}{orange}{rvs on}{161}{rvs off}{190}{rvs on}{188}{161}{190}{161}{rvs off}{190}{rvs on}{172}{rvs off}"
 
+    XP% = 23 : YP% = 24 : GOSUB Set_Cursor_Position
+    PRINT "{grey}Game Jam By RPI";
+
     RETURN
 
 Print_Instructions__Blank:
