@@ -76,20 +76,35 @@ Increment_Score:
     GOSUB Print_Score
     RETURN
 
+Set_Cell_Colours:
+    IF CB% THEN Set_Cell_Colours__Colour_Blind
+    CC%(0, 0) = 2 : CC%(0, 1) = 10
+    CC%(1, 0) = 5 : CC%(1, 1) = 13
+    CC%(2, 0) = 6 : CC%(2, 1) = 14
+    CC%(3, 0) = 7 : CC%(3, 1) = 1
+
+    GOTO Set_Cell_Colours__Update_Sprite_Colours
+
+Set_Cell_Colours__Colour_Blind:
+    CC%(0, 0) = 11 : CC%(0, 1) = 1
+    CC%(1, 0) = 11 : CC%(1, 1) = 1
+    CC%(2, 0) = 11 : CC%(2, 1) = 1
+    CC%(3, 0) = 11 : CC%(3, 1) = 1
+
+Set_Cell_Colours__Update_Sprite_Colours:
+    REM Sprite Colours
+    FOR I = 0 TO 3 : POKE VL+39+I,CC%(I, 0) : NEXT
+
+    RETURN
+
 Initialise_Program:
     POKE 53280,0 : POKE 53281,0
     PRINT "{clr}{home}" : REM Clear the screen
     MX = 20 : REM Max Pattern Length
     DIM PA%(MX) : REM Pattern Array
     RD% = RND(-TI) : REM re-seed the random generator
-
-Cell_Colours:
     DIM CC%(3,3) : REM Cell Colours
-
-    CC%(0, 0) = 2 : CC%(0, 1) = 10
-    CC%(1, 0) = 5 : CC%(1, 1) = 13
-    CC%(2, 0) = 6 : CC%(2, 1) = 14
-    CC%(3, 0) = 7 : CC%(3, 1) = 1
+    CB% = 0 : REM Colourblind Mode Off
 
 Keyboard_Keys:
     DIM KK$(3)
@@ -114,6 +129,7 @@ Initialise_Sound:
 
 #--------------
 
+    GOSUB Set_Cell_Colours
     GOSUB Initialise_Sprites
     GOSUB Game_Screen
     GOSUB Print_Instructions__Watch_Clearly
@@ -127,18 +143,21 @@ Restart:
     SC% = -1 : REM Reset Score
 
 Ready_Up_Next_Sequence:
-    POKE 649,0 : REM Disable Keyboard Buffer
     NC = NC + 1 : REM Move next counter along
-    CC = 0 : REM Current sequence counter
 
     GOSUB Increment_Score
+
+    GOSUB Generate_Random : REM Generate Random
+    PA%(NC) = RD% : REM Store random number in sequence array
+
+Flash_Current_Sequence:
+    POKE 649,0 : REM Disable Keyboard Buffer
+    CC = 0 : REM Current sequence counter
+
     GOSUB Print_Instructions__Watch_Clearly
     
     FD% = 300 : REM Set Flash Sprite Delay
-    GOSUB Wait_Delay    
-
-    GOSUB Generate_Random : REM Generate Random
-    PA%(NC) = RD% : REM Store random number in sequence array    
+    GOSUB Wait_Delay
 
     FOR I = 0 TO NC    
     SN% = PA%(I) : GOSUB Flash_Sprite
@@ -159,6 +178,9 @@ Get_Next_Key:
     FOR I = 0 TO 3
     IF K$ = KK$(I) THEN K% = I : I = 99
     NEXT
+
+    REM Change Colourblind Mode
+    IF K$ = "C" THEN CB% = NOT CB% : GOSUB Set_Cell_Colours : GOTO Flash_Current_Sequence
 
     REM Flash the user's input
     IF K% < 0 OR K% > 3 THEN GOTO Get_Next_Key
@@ -207,8 +229,7 @@ Initialise_Sprites:
     POKE VL+28,0: rem multicolor
     POKE VL+29,255 : POKE VL+23,255: rem width & height    
     
-    REM Sprite Colours
-    FOR I = 0 TO 3 : POKE VL+39+I,CC%(I, 0) : NEXT
+    GOSUB Set_Cell_Colours
     
     REM Set Sprite Data
     FOR X = 0 TO 0
