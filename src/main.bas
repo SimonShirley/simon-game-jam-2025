@@ -140,6 +140,7 @@ Restart:
     PRINT "{clr}{home}"
     GOSUB Game_Screen__Simon_Logo
     GOSUB Game_Screen__Colour_Boxes
+    GOSUB Set_Cell_Colours
     GOSUB Show_Sprites
     GOSUB Game_Screen__Alto_Fluff_Logo
     GOSUB Print_Instructions__Watch_Clearly
@@ -186,9 +187,6 @@ Get_Next_Key:
     FOR I = 0 TO 3
     IF K$ = KK$(I) THEN K% = I : I = 99
     NEXT
-
-    REM Change Colourblind Mode
-    IF K$ = "C" THEN CB% = NOT CB% : GOSUB Set_Cell_Colours : GOTO Flash_Current_Sequence
 
     REM Flash the user's input
     IF K% < 0 OR K% > 3 THEN GOTO Get_Next_Key
@@ -345,8 +343,13 @@ Game_Screen__Title_Screen:
     PRINT
     PRINT "   {grey}Jan-Feb 2025";
 
+    TC% = CB% : REM Temp Colourblind setting
+    CB% = 0 : GOSUB Set_Cell_Colours
+
     GOSUB Show_Sprites
     GOSUB Game_Screen__Alto_Fluff_Logo
+
+    CB% = TC% : REM Restore Colourblind Setting
 
 
 Wait__Title_Screen:
@@ -364,7 +367,7 @@ Game_Screen__Options:
     PRINT "   {white}Game Options :"
     PRINT "   {red}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}"
     PRINT
-    PRINT "   {light-red}Colours  {white}F1 : {rvs on}Normal{rvs off} / Monochrome"
+    PRINT "   {light-red}Colours  {white}F1 : "; : GOSUB Options__Colour_Mode
     PRINT
     PRINT "   {lightgreen}Sound    {white}F3 : {rvs on}On{rvs off} / Off"
     PRINT
@@ -383,10 +386,18 @@ Game_Screen__Options:
 Wait_Options:
     GET K$ : IF K$ = "" THEN Wait_Options
 
+    IF K$ = CHR$(133) THEN CB% = NOT CB% : GOSUB Options__Colour_Mode
     IF K$ = "P" THEN Restart
     IF K$ = "M" THEN Game_Screen__Title_Screen
 
     GOTO Wait_Options
+
+Options__Colour_Mode:
+    XP% = 17 : YP% = 12 : GOSUB Set_Cursor_Position
+    
+    IF CB% THEN PRINT "{white}Normal / {rvs on}Monochrome{rvs off}" : RETURN
+    PRINT "{white}{rvs on}Normal{rvs off} / Monochrome"
+    RETURN
 
 Game_Screen__Instructions:
     GOSUB Hide_Sprites__Game_Screen
