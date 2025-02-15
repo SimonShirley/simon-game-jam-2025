@@ -105,6 +105,7 @@ Initialise_Program:
     RD% = RND(-TI) : REM re-seed the random generator
     DIM CC%(3,3) : REM Cell Colours
     CB% = 0 : REM Colourblind Mode Off
+    FS% = 300 : REM Default Flash Delay Setting - FD% is the delay variable
 
 Keyboard_Keys:
     DIM KK$(3)
@@ -165,7 +166,7 @@ Flash_Current_Sequence:
 
     GOSUB Print_Instructions__Watch_Clearly
     
-    FD% = 300 : REM Set Flash Sprite Delay
+    FD% = FS% : REM Set Flash Sprite Delay
     GOSUB Wait_Delay
 
     FOR I = 0 TO NC    
@@ -177,8 +178,10 @@ Flash_Current_Sequence:
 
     GOSUB Print_Instructions__Your_Turn
 
-Game_Loop:    
-    FD% = 75 : REM Set Flash Sprite Delay
+Game_Loop:
+    REM Set Flash Sprite Delay
+    IF FS% = 300 THEN FD% = 75 : GOTO Get_Next_Key
+    FD% = 25
 
 Get_Next_Key:
     GET K$ : IF K$ = "" THEN Game_Loop
@@ -199,7 +202,7 @@ Get_Next_Key:
     IF CC = MX - 1 THEN End_Game
 
     REM Increase Sequence Game Loop
-    FD% = 500 : REM Set Flash Sprite Delay
+    FD% = 300 : REM Set Flash Sprite Delay
     IF CC = NC THEN GOSUB Wait_Delay : GOTO Ready_Up_Next_Sequence
 
     CC = CC + 1 : REM Increment current guess counter
@@ -367,11 +370,11 @@ Game_Screen__Options:
     PRINT "   {white}Game Options :"
     PRINT "   {red}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}"
     PRINT
-    PRINT "   {light-red}Colours  {white}F1 : "; : GOSUB Options__Colour_Mode
+    PRINT "   {light-red}Colours  {white}F1 : "; : GOSUB Options__Colour_Mode_Print
     PRINT
     PRINT "   {lightgreen}Sound    {white}F3 : {rvs on}On{rvs off} / Off"
     PRINT
-    PRINT "   {yellow}Speed    {white}F5 : {rvs on}Normal{rvs off} / Fast"
+    PRINT "   {yellow}Speed    {white}F5 : "; : GOSUB Options__Flash_Delay_Print
     PRINT
     PRINT "   {lightblue}Mode     {white}F7 : {rvs on}Normal{rvs off} / Sound Only"
     PRINT
@@ -386,17 +389,32 @@ Game_Screen__Options:
 Wait_Options:
     GET K$ : IF K$ = "" THEN Wait_Options
 
-    IF K$ = CHR$(133) THEN CB% = NOT CB% : GOSUB Options__Colour_Mode
+    IF K$ = CHR$(133) THEN GOSUB Options__Colour_Mode_Set
+    IF K$ = CHR$(135) THEN GOSUB Options__Flash_Delay_Set
     IF K$ = "P" THEN Restart
     IF K$ = "M" THEN Game_Screen__Title_Screen
 
     GOTO Wait_Options
 
-Options__Colour_Mode:
+Options__Colour_Mode_Set:
+    CB% = NOT CB%
+
+Options__Colour_Mode_Print:
     XP% = 17 : YP% = 12 : GOSUB Set_Cursor_Position
     
     IF CB% THEN PRINT "{white}Normal / {rvs on}Monochrome{rvs off}" : RETURN
     PRINT "{white}{rvs on}Normal{rvs off} / Monochrome"
+    RETURN
+
+Options__Flash_Delay_Set:
+    IF FS% = 300 THEN FS% = 50 : GOTO Options__Flash_Delay_Print
+    FS% = 300
+
+Options__Flash_Delay_Print:
+    XP% = 17 : YP% = 16 : GOSUB Set_Cursor_Position
+
+    IF FS% = 300 THEN PRINT "{white}{rvs on}Normal{rvs off} / Fast" : RETURN
+    PRINT "{white}Normal / {rvs on}Fast{rvs off}"
     RETURN
 
 Game_Screen__Instructions:
