@@ -131,11 +131,19 @@ Initialise_Sound:
 
     GOSUB Set_Cell_Colours
     GOSUB Initialise_Sprites
-    GOSUB Game_Screen
-    GOSUB Print_Instructions__Watch_Clearly
-    GOSUB Print_Score
+
+    GOTO Game_Screen__Title_Screen
 
 Restart:
+    SC% = 0
+
+    PRINT "{clr}{home}"
+    GOSUB Game_Screen__Simon_Logo
+    GOSUB Game_Screen__Colour_Boxes
+    GOSUB Show_Sprites
+    GOSUB Game_Screen__Alto_Fluff_Logo
+    GOSUB Print_Instructions__Watch_Clearly
+
     REM Empty sequence
     FOR I = 0 TO MX : PA%(I) = 0 : NEXT
 
@@ -207,12 +215,11 @@ Game_Over:
 End_Game:
     GOSUB Increment_Score
     GOSUB Print_Instructions__Win
-    GOTO Pre_Restart
     
 Pre_Restart:
     FD% = 2000
     GOSUB Wait_Delay
-    GOTO Restart
+    GOTO Game_Screen__Title_Screen
 
 
 Setup_Sprites:
@@ -250,23 +257,38 @@ Initialise_Sprites:
     POKE SP + X, SL
     NEXT X
 
+Show_Sprites:
     POKE VL+21,31 : rem set sprites 0-3 visible
+    RETURN
+
+Hide_Sprites:
+    POKE VL+21,0 : rem turn off all sprites
+    RETURN
+
+Hide_Sprites__Game_Screen:
+    GOSUB Hide_Sprites
+
+    PRINT "{clr}{home}"
+    GOSUB Game_Screen__Simon_Logo
+
+    XP% = 0 : YP% = 9 : GOSUB Set_Cursor_Position
 
     RETURN
 
-#---------------------
-
-Game_Screen:
-    REM Instructions
+Game_Screen__Simon_Logo:
+    REM Simon Logo
     PRINT "{clr}{home}"
-    PRINT
     PRINT
     PRINT "   {pink}{162}{187}{lightgreen}{187}"
     PRINT "   {pink}{rvs on}{252}{rvs off}{187}{lightgreen}{187}{yellow}{162}{172}{187}{cyan}{162}{187}{white}{162}{187}"
     PRINT "   {pink}{162}{161}{lightgreen}{161}{yellow}{161}{190}{161}{cyan}{rvs on}{188}{rvs off}{161}{white}{161}{161}"
     PRINT
     PRINT "   {purple}{rvs on}{162}{162}{162}{162}{162}{162}{162}{162}{162}{rvs off}{190}"
+    PRINT
 
+    RETURN
+
+Game_Screen__Colour_Boxes:
     REM Colour Boxes
     XP% = 23 : YP% = 3 : GOSUB Set_Cursor_Position
     PRINT "{red}{176}     {174} {green}{176}     {174}"
@@ -286,25 +308,139 @@ Game_Screen:
     XP% = 23 : YP% = 17 : GOSUB Set_Cursor_Position
     PRINT "{blue}{173}     {189} {lightgreen}{173}     {189}"
 
+    RETURN
+
+Game_Screen__Alto_Fluff_Logo:
     REM AltoFluff
-    XP% = 23 : YP% = 20 : GOSUB Set_Cursor_Position    
+    REM Remember to manually set YP%
+    XP% = 23 : YP% = 22 : GOSUB Set_Cursor_Position    
     PRINT "{brown}{rvs on}{172}{rvs off}{161}{161}{188}{rvs on}{172}{161}{187}{brown}{rvs off}{188}{rvs on}{162}{162}{162}{162}{162}{162}{162}{rvs off}"
     
-    XP% = 23 : YP% = 21 : GOSUB Set_Cursor_Position
+    XP% = 23 : YP% = 23 : GOSUB Set_Cursor_Position
     PRINT "{brown}{rvs on}{172}{rvs off}{161}{rvs on}{188}{rvs off} {161}{rvs on}{161}{190}{rvs off}{orange}{rvs on}{161}{rvs off}{190}{161}{rvs on}{161}{161}{161}{rvs off}{190}{rvs on}{172}{rvs off}"
 
-    XP% = 23 : YP% = 22 : GOSUB Set_Cursor_Position
-    PRINT "{orange}{162}{162}{162}{162}{162}{162}{162}{orange}{rvs on}{161}{rvs off}{190}{rvs on}{188}{161}{190}{161}{rvs off}{190}{rvs on}{172}{rvs off}"
-
     XP% = 23 : YP% = 24 : GOSUB Set_Cursor_Position
-    PRINT "{grey}Game Jam By RPI";
+    PRINT "{orange}{162}{162}{162}{162}{162}{162}{162}{orange}{rvs on}{161}{rvs off}{190}{rvs on}{188}{161}{190}{161}{rvs off}{190}{rvs on}{172}{rvs off}";
 
     RETURN
 
-Print_Instructions__Blank:
-    XP% = 0 : YP% = 10 : GOSUB Set_Cursor_Position
+
+Game_Screen__Title_Screen:
+    GOSUB Hide_Sprites__Game_Screen
+
+    PRINT "   {white}A {light-red}simple {lightgreen}game {white}of"
+    PRINT
+    PRINT "   {yellow}memorisation"
+    PRINT
+    PRINT "   {white}and {lightblue}repetition"
+    PRINT
+    PRINT
+    PRINT
+    PRINT "   {white}P - Play Game"
+    PRINT
+    PRINT "   I - Instructions"
+    PRINT
+    PRINT "   C - Credits"
+    PRINT
+    PRINT
+    PRINT "   {grey}Jan-Feb 2025";
+
+    GOSUB Show_Sprites
+    GOSUB Game_Screen__Alto_Fluff_Logo
+
+
+Wait__Title_Screen:
+    GET K$ : IF K$ = "" THEN Wait__Title_Screen
+
+    IF K$ = "C" THEN Game_Screen__Credits
+    IF K$ = "I" THEN Game_Screen__Instructions
+    IF K$ = "P" THEN Game_Screen__Options
     
-    FOR BL = 0 TO 9
+    GOTO Wait__Title_Screen
+
+Game_Screen__Options:
+    GOSUB Hide_Sprites__Game_Screen
+
+    PRINT "   {white}Game Options :"
+    PRINT "   {red}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}"
+    PRINT
+    PRINT "   {light-red}Colours  {white}F1 : {rvs on}Normal{rvs off} / Monochrome"
+    PRINT
+    PRINT "   {lightgreen}Sound    {white}F3 : {rvs on}On{rvs off} / Off"
+    PRINT
+    PRINT "   {yellow}Speed    {white}F5 : {rvs on}Normal{rvs off} / Fast"
+    PRINT
+    PRINT "   {lightblue}Mode     {white}F7 : {rvs on}Normal{rvs off} / Sound Only"
+    PRINT
+    PRINT
+    PRINT
+    PRINT "   {white}P - Play Game"
+    PRINT
+    PRINT "   M - Main Menu";
+
+    GOSUB Game_Screen__Alto_Fluff_Logo
+
+Wait_Options:
+    GET K$ : IF K$ = "" THEN Wait_Options
+
+    IF K$ = "P" THEN Restart
+    IF K$ = "M" THEN Game_Screen__Title_Screen
+
+    GOTO Wait_Options
+
+Game_Screen__Instructions:
+    GOSUB Hide_Sprites__Game_Screen
+
+    PRINT "   {white}The Game will generate a random"
+    PRINT "   sequence of colours"
+    PRINT
+    PRINT "   Once the computer has shown the"
+    PRINT "   sequence, you will need to enter"
+    PRINT "   the same sequence using the"
+    PRINT "   {light-red}Q {lightgreen}W {yellow}A {lightblue}S {white}keys"
+    PRINT
+    PRINT "   On successful entry, the sequence"
+    PRINT "   will repeat, with one new random"
+    PRINT "   colour added to the end"
+    PRINT
+    PRINT "   How many can you remember?"
+    PRINT
+    PRINT
+    PRINT "   M - Main Menu";
+
+Wait__Instructions:
+    GET K$ : IF K$ = "M" THEN Game_Screen__Title_Screen
+    GOTO Wait__Instructions
+
+Game_Screen__Credits:
+    GOSUB Hide_Sprites__Game_Screen
+
+    PRINT "   {white}Participated in the"
+    PRINT "   {lightblue}Retro Programmers Inside {white}({lightblue}RPI{white})"
+    PRINT "   and {yellow}Phaze101 {white}Game Jam"
+    PRINT
+    PRINT "   {lightgreen}https://itch.io/jam/simongame"
+    PRINT
+    PRINT
+    PRINT
+    PRINT "   {white}With special thanks to :"
+    PRINT "   {light-red}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}"
+    PRINT
+    PRINT "   {lightblue}DeadSheppy{white}, {lightblue}Oberon{white}, & {lightblue}Sabbath"
+    PRINT "   {white}for mode ideas and game testing"
+    PRINT
+    PRINT
+    PRINT "   M - Main Menu";
+
+Wait__Credits:
+    GET K$ : IF K$ = "M" THEN Game_Screen__Title_Screen
+    GOTO Wait__Credits
+
+
+Print_Instructions__Blank:
+    XP% = 0 : YP% = 9 : GOSUB Set_Cursor_Position
+    
+    FOR BL = 0 TO 10
     PRINT "                       "
     NEXT BL
 
@@ -313,7 +449,7 @@ Print_Instructions__Blank:
 Print_Instructions__Watch_Clearly:
     GOSUB Print_Instructions__Blank
     
-    XP% = 0 : YP% = 10 : GOSUB Set_Cursor_Position
+    XP% = 0 : YP% = 9 : GOSUB Set_Cursor_Position
     
     PRINT "   {white}Watch the"
     PRINT
@@ -324,7 +460,7 @@ Print_Instructions__Watch_Clearly:
 Print_Instructions__Your_Turn:
     GOSUB Print_Instructions__Blank
     
-    XP% = 0 : YP% = 10 : GOSUB Set_Cursor_Position
+    XP% = 0 : YP% = 9 : GOSUB Set_Cursor_Position
     
     PRINT "   {white}Repeat the"
     PRINT
@@ -335,7 +471,7 @@ Print_Instructions__Your_Turn:
 Print_Instructions__Win:
     GOSUB Print_Instructions__Blank
 
-    XP% = 0 : YP% = 10 : GOSUB Set_Cursor_Position
+    XP% = 0 : YP% = 9 : GOSUB Set_Cursor_Position
     
     PRINT "   {white}Congratulations"
     PRINT
@@ -351,7 +487,7 @@ Print_Instructions__Correct_Sequence:
     GOSUB Print_Instructions__Blank
 
     LN = 13
-    XP% = 0 : YP% = 10 : GOSUB Set_Cursor_Position    
+    XP% = 0 : YP% = 9 : GOSUB Set_Cursor_Position    
     
     PRINT "   {white}The Correct"
     PRINT
@@ -375,22 +511,22 @@ Print_Loop:
     RETURN
 
 Print_Score:
-    XP% = 0 : YP% = 20 : GOSUB Set_Cursor_Position
-    PRINT "   {white}Score      : "
+    XP% = 0 : YP% = 22 : GOSUB Set_Cursor_Position    
+    PRINT "   {white}Score      :    "
     PRINT
-    PRINT "   High Score : "
-
-    XP% = 16 : YP% = 20 : GOSUB Set_Cursor_Position
-    PRINT "   "
+    PRINT "   High Score :    ";
 
     XP% = 16 : YP% = 22 : GOSUB Set_Cursor_Position
     PRINT "   "
 
-    XP% = 16 : YP% = 20 : GOSUB Set_Cursor_Position
+    XP% = 16 : YP% = 24 : GOSUB Set_Cursor_Position
+    PRINT "   ";
+
+    XP% = 16 : YP% = 22 : GOSUB Set_Cursor_Position
     PRINT SC%
 
-    XP% = 16 : YP% = 22 : GOSUB Set_Cursor_Position
-    PRINT HI%
+    XP% = 16 : YP% = 24 : GOSUB Set_Cursor_Position
+    PRINT HI%;
 
     RETURN
 
