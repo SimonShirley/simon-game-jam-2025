@@ -55,8 +55,10 @@ Wait_Delay:
     FOR J = 0 TO FD% : NEXT J : RETURN
 
 Flash_Sprite:
+    IF CM% AND SO% THEN Flash_Sprite__Start_Sound
     REM SN% = Sprite Number to Enable
     GOSUB Turn_On_Sprite : REM Turn On Sprite
+Flash_Sprite__Start_Sound:
     GOSUB Start_Sound : REM Start Sound
 
     GOSUB Wait_Delay : REM Wait
@@ -106,6 +108,7 @@ Initialise_Program:
     DIM CC%(3,3) : REM Cell Colours
     CB% = 0 : REM Colourblind Mode Off
     FS% = 300 : REM Default Flash Delay Setting - FD% is the delay variable
+    SO% = 0 : REM Sound Only Mode
 
 Keyboard_Keys:
     DIM KK$(3)
@@ -154,6 +157,7 @@ Restart:
 
 Ready_Up_Next_Sequence:
     NC = NC + 1 : REM Move next counter along
+    CM% = -1 : REM In computer display mode
 
     GOSUB Increment_Score
 
@@ -177,6 +181,8 @@ Flash_Current_Sequence:
     POKE 631,0 : REM Set remaining keyboard keys buffer to 0
 
     GOSUB Print_Instructions__Your_Turn
+
+    CM% = 0 : REM Set to user mode
 
 Game_Loop:
     REM Set Flash Sprite Delay
@@ -372,11 +378,11 @@ Game_Screen__Options:
     PRINT
     PRINT "   {light-red}Colours  {white}F1 : "; : GOSUB Options__Colour_Mode_Print
     PRINT
-    PRINT "   {lightgreen}Sound    {white}F3 : {rvs on}On{rvs off} / Off"
+    PRINT "   {lightblue}Mode     {white}F3 : "; : GOSUB Options__Sound_Only_Print
     PRINT
     PRINT "   {yellow}Speed    {white}F5 : "; : GOSUB Options__Flash_Delay_Print
     PRINT
-    PRINT "   {lightblue}Mode     {white}F7 : {rvs on}Normal{rvs off} / Sound Only"
+    PRINT "   {lightgreen}Hints    {white}F7 : {rvs on}Off{rvs off} / On"    
     PRINT
     PRINT
     PRINT
@@ -390,6 +396,7 @@ Wait_Options:
     GET K$ : IF K$ = "" THEN Wait_Options
 
     IF K$ = CHR$(133) THEN GOSUB Options__Colour_Mode_Set
+    IF K$ = CHR$(134) THEN GOSUB Options__Sound_Only_Set
     IF K$ = CHR$(135) THEN GOSUB Options__Flash_Delay_Set
     IF K$ = "P" THEN Restart
     IF K$ = "M" THEN Game_Screen__Title_Screen
@@ -404,6 +411,16 @@ Options__Colour_Mode_Print:
     
     IF CB% THEN PRINT "{white}Normal / {rvs on}Monochrome{rvs off}" : RETURN
     PRINT "{white}{rvs on}Normal{rvs off} / Monochrome"
+    RETURN
+
+Options__Sound_Only_Set:
+    SO% = NOT SO%
+
+Options__Sound_Only_Print:
+    XP% = 17 : YP% = 14 : GOSUB Set_Cursor_Position
+
+    IF SO% THEN PRINT "{white}Normal / {rvs on}Sound Only{rvs off}" : RETURN
+    PRINT "{white}{rvs on}Normal{rvs off} / Sound Only"
     RETURN
 
 Options__Flash_Delay_Set:
@@ -480,7 +497,9 @@ Print_Instructions__Watch_Clearly:
     
     XP% = 0 : YP% = 9 : GOSUB Set_Cursor_Position
     
+    IF SO% THEN PRINT "   {white}Listen to the" : GOTO Print_Instructions__Watch_Clearly_Continue
     PRINT "   {white}Watch the"
+Print_Instructions__Watch_Clearly_Continue:
     PRINT
     PRINT "   Sequence Closely"
 
