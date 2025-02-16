@@ -147,10 +147,30 @@ Restart:
     GOSUB Set_Cell_Colours
     GOSUB Show_Sprites
     GOSUB Game_Screen__Alto_Fluff_Logo
+    
+    IF NOT SO% THEN Game_Start_After_Restart
+
+    GOSUB Print_Instructions__Listen_To_Tones
+    SO% = 0 : REM Unset Sound Only mode for the demonstration
+
+    SC% = -1 : GOSUB Increment_Score
+
+    FD% = 300 : REM Set Flash Sprite Delay
+
+    FOR L = 0 TO 1
+    FOR I = 0 TO 3
+    SN% = I
+    GOSUB Flash_Sprite
+    NEXT I
+    NEXT L
+
+    SO% = -1 : REM Reset Sound Only Mode
+
+Game_Start_After_Restart:
     GOSUB Print_Instructions__Watch_Clearly
 
     REM Empty sequence
-    FOR I = 0 TO MX : PA%(I) = 0 : NEXT
+    FOR I = 0 TO MX : PA%(I) = -1 : NEXT
 
     NC = -1 : REM Next sequence counter
     SC% = -1 : REM Reset Score
@@ -555,6 +575,19 @@ Print_Loop:
     NEXT I
     PRINT
     NEXT J
+
+    RETURN
+
+Print_Instructions__Listen_To_Tones:
+    GOSUB Print_Instructions__Blank
+    
+    XP% = 0 : YP% = 9 : GOSUB Set_Cursor_Position
+    
+    PRINT "   {white}Listen to the"
+    PRINT
+    PRINT "   Tones and"
+    PRINT
+    PRINT "   Memorise"
 
     RETURN
 
