@@ -109,6 +109,7 @@ Initialise_Program:
     CB% = 0 : REM Colourblind Mode Off
     FS% = 300 : REM Default Flash Delay Setting - FD% is the delay variable
     SO% = 0 : REM Sound Only Mode
+    HM% = 0 : REM Hint Mode disabled
 
 Keyboard_Keys:
     DIM KK$(3)
@@ -140,6 +141,8 @@ Initialise_Sound:
 
 Restart:
     SC% = 0
+    HA% = 3 : REM Hints Available
+    HU% = 0 : REM Hint Used This Round
 
     PRINT "{clr}{home}"
     GOSUB Game_Screen__Simon_Logo
@@ -148,6 +151,7 @@ Restart:
     GOSUB Show_Sprites
     GOSUB Game_Screen__Alto_Fluff_Logo
     
+    IF HM% THEN GOSUB Print_Hints    
     IF NOT SO% THEN Game_Start_After_Restart
 
     GOSUB Print_Instructions__Listen_To_Tones
@@ -179,7 +183,10 @@ Ready_Up_Next_Sequence:
     NC = NC + 1 : REM Move next counter along
     CM% = -1 : REM In computer display mode
 
-    GOSUB Increment_Score
+    REM No score if a hint was used
+    IF NOT HU% THEN GOSUB Increment_Score
+
+    HU% = 0 : REM Reset Hint Used Flag
 
     GOSUB Generate_Random : REM Generate Random
     PA%(NC) = RD% : REM Store random number in sequence array
@@ -212,6 +219,10 @@ Game_Loop:
 Get_Next_Key:
     GET K$ : IF K$ = "" THEN Game_Loop
 
+    IF NOT HM% THEN Get_Next_Key__Continue
+    IF K$ = "H" AND HA% > 0 THEN Show_Hint
+
+Get_Next_Key__Continue:
     K% = -1
     FOR I = 0 TO 3
     IF K$ = KK$(I) THEN K% = I : I = 99
@@ -234,6 +245,13 @@ Get_Next_Key:
     CC = CC + 1 : REM Increment current guess counter
 
     GOTO Game_Loop
+
+Show_Hint:
+    HU% = -1 : REM Set Hint Used Flag
+    HA% = HA% - 1 : REM Reduce remaining hints available
+    GOSUB Print_Hints
+    GOSUB Flash_Current_Sequence
+    GOTO Get_Next_Key
 
 Game_Over:
     GOSUB Print_Instructions__Correct_Sequence
@@ -402,7 +420,7 @@ Game_Screen__Options:
     PRINT
     PRINT "   {yellow}Speed    {white}F5 : "; : GOSUB Options__Flash_Delay_Print
     PRINT
-    PRINT "   {lightgreen}Hints    {white}F7 : {rvs on}Off{rvs off} / On"    
+    PRINT "   {lightgreen}Hints    {white}F7 : "; : GOSUB Options__Hints_Print
     PRINT
     PRINT
     PRINT
@@ -418,6 +436,7 @@ Wait_Options:
     IF K$ = CHR$(133) THEN GOSUB Options__Colour_Mode_Set
     IF K$ = CHR$(134) THEN GOSUB Options__Sound_Only_Set
     IF K$ = CHR$(135) THEN GOSUB Options__Flash_Delay_Set
+    IF K$ = CHR$(136) THEN GOSUB Options__Hints_Set
     IF K$ = "P" THEN Restart
     IF K$ = "M" THEN Game_Screen__Title_Screen
 
@@ -452,6 +471,16 @@ Options__Flash_Delay_Print:
 
     IF FS% = 300 THEN PRINT "{white}{rvs on}Normal{rvs off} / Fast" : RETURN
     PRINT "{white}Normal / {rvs on}Fast{rvs off}"
+    RETURN
+
+Options__Hints_Set:
+    HM% = NOT HM%
+
+Options__Hints_Print:
+    XP% = 17 : YP% = 18 : GOSUB Set_Cursor_Position
+
+    IF HM% THEN PRINT "{white}Off / {rvs on}On{rvs off}" : RETURN
+    PRINT "{white}{rvs on}Off{rvs off} / On"
     RETURN
 
 Game_Screen__Instructions:
@@ -534,6 +563,13 @@ Print_Instructions__Your_Turn:
     PRINT
     PRINT "   Sequence"
 
+    IF NOT HU% THEN RETURN
+
+    PRINT
+    PRINT "   From the"
+    PRINT
+    PRINT "   Beginning"
+
     RETURN
 
 Print_Instructions__Win:
@@ -590,6 +626,20 @@ Print_Instructions__Listen_To_Tones:
     PRINT "   Memorise"
 
     RETURN
+
+Print_Hints:
+    XP% = 0 : YP% = 20 : GOSUB Set_Cursor_Position
+    PRINT "                         "
+
+    IF NOT HM% THEN RETURN
+    XP% = 0 : YP% = 20 : GOSUB Set_Cursor_Position
+    PRINT "   {white}Hints (H)  :    ";
+
+    XP% = 16 : YP% = 20 : GOSUB Set_Cursor_Position
+    PRINT HA%
+
+    RETURN
+
 
 Print_Score:
     XP% = 0 : YP% = 22 : GOSUB Set_Cursor_Position    
