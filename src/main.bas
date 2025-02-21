@@ -131,6 +131,24 @@ Initialise_Sound:
     POKE SR + 5,9 : POKE SR + 6,0 : REM SET ADSR ENVELOPE
     POKE SR + 24,15 : REM SET MAX VOLUME
 
+Initialise_Win_Jingle:
+    DIM WJ%(5) : REM Win Jingle Note
+    DIM WD%(5) : REM Win Jingle Delay
+
+    WJ%(0) = 0
+    WJ%(1) = 1
+    WJ%(2) = 2
+    WJ%(3) = 3
+    WJ%(4) = 2
+    WJ%(5) = 3
+
+    WD%(0) = 50
+    WD%(1) = 50
+    WD%(2) = 50
+    WD%(3) = 100
+    WD%(4) = 50
+    WD%(5) = 100
+
 #--------------
 
     GOSUB Set_Cell_Colours
@@ -276,6 +294,14 @@ Game_Over__Jingle:
 End_Game:
     GOSUB Increment_Score
     GOSUB Print_Instructions__Win
+
+    FOR J = 0 TO 5
+    FD% = WD%(J)
+    SN% = WJ%(J)
+    GOSUB Start_Sound
+    GOSUB Wait_Delay
+    GOSUB Stop_Sound    
+    NEXT J
     
 Pre_Restart:
     FD% = 2000
