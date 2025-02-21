@@ -254,6 +254,22 @@ Show_Hint:
     GOTO Get_Next_Key
 
 Game_Over:
+    GOSUB Print_Instructions__Blank
+
+Game_Over__Jingle:
+    POKE SR + 1, 16 : POKE SR, 195 : REM Poke Note Frequency
+
+    FOR J = 0 TO 2
+    POKE SR + 4, 33 : REM GATE(1) + SAWTOOTH(32)
+    FD% = 100 : GOSUB Wait_Delay
+    POKE SR + 4, 32 : REM GATE(0) + SAWTOOTH(32)
+    NEXT J
+
+    #-------
+
+    GOSUB Print_Instructions__Correct_Sequence_Header
+    FD% = 500 : GOSUB Wait_Delay
+
     GOSUB Print_Instructions__Correct_Sequence
     GOTO Pre_Restart
 
@@ -587,7 +603,7 @@ Print_Instructions__Win:
 
     RETURN
 
-Print_Instructions__Correct_Sequence:
+Print_Instructions__Correct_Sequence_Header:
     GOSUB Print_Instructions__Blank
 
     LN = 13
@@ -598,8 +614,13 @@ Print_Instructions__Correct_Sequence:
     PRINT "   Sequence Was: "
     PRINT
 
+    RETURN
+
+Print_Instructions__Correct_Sequence:
     PC = 0
     PL = 8 : REM PL : Print per line
+
+    FD% = 150 : REM Reduce Wait Delay
     
     FOR J = 0 TO NC STEP PL
     IF (NC - PC) < PL THEN PL = NC - PC + 1
