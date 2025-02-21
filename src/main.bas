@@ -106,7 +106,7 @@ Initialise_Program:
     DIM PA%(MX) : REM Pattern Array
     DIM CC%(3,3) : REM Cell Colours
     CB% = 0 : REM Colourblind Mode Off
-    FS% = 300 : REM Default Flash Delay Setting - FD% is the delay variable
+    FS% = 200 : REM Default Flash Delay Setting - FD% is the delay variable
     SO% = 0 : REM Sound Only Mode
     HM% = 0 : REM Hint Mode disabled
 
@@ -177,7 +177,7 @@ Restart:
 
     SC% = -1 : GOSUB Increment_Score
 
-    FD% = 300 : REM Set Flash Sprite Delay
+    FD% = 200 : REM Set Flash Sprite Delay
 
     FOR L = 0 TO 1
     FOR I = 0 TO 3
@@ -231,7 +231,7 @@ Flash_Current_Sequence:
 
 Game_Loop:
     REM Set Flash Sprite Delay
-    IF FS% = 300 THEN FD% = 75 : GOTO Get_Next_Key
+    IF FS% = 200 THEN FD% = 75 : GOTO Get_Next_Key
     FD% = 25
 
 Get_Next_Key:
@@ -257,7 +257,7 @@ Get_Next_Key__Continue:
     IF CC = MX - 1 THEN End_Game
 
     REM Increase Sequence Game Loop
-    FD% = 300 : REM Set Flash Sprite Delay
+    FD% = 200 : REM Set Flash Sprite Delay
     IF CC = NC THEN GOSUB Wait_Delay : GOTO Ready_Up_Next_Sequence
 
     CC = CC + 1 : REM Increment current guess counter
@@ -505,13 +505,13 @@ Options__Sound_Only_Print:
     RETURN
 
 Options__Flash_Delay_Set:
-    IF FS% = 300 THEN FS% = 50 : GOTO Options__Flash_Delay_Print
-    FS% = 300
+    IF FS% = 200 THEN FS% = 50 : GOTO Options__Flash_Delay_Print
+    FS% = 200
 
 Options__Flash_Delay_Print:
     XP% = 17 : YP% = 16 : GOSUB Set_Cursor_Position
 
-    IF FS% = 300 THEN PRINT "{white}{rvs on}Normal{rvs off} / Fast" : RETURN
+    IF FS% = 200 THEN PRINT "{white}{rvs on}Normal{rvs off} / Fast" : RETURN
     PRINT "{white}Normal / {rvs on}Fast{rvs off}"
     RETURN
 
