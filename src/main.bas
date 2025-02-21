@@ -179,12 +179,10 @@ Restart:
 
     FD% = 200 : REM Set Flash Sprite Delay
 
-    FOR L = 0 TO 1
-    FOR I = 0 TO 3
-    SN% = I
+    FOR I = 0 TO 7
+    SN% = I AND 3
     GOSUB Flash_Sprite
     NEXT I
-    NEXT L
 
     SO% = -1 : REM Reset Sound Only Mode
 
