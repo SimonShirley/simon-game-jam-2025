@@ -104,7 +104,6 @@ Initialise_Program:
     PRINT "{clr}{home}" : REM Clear the screen
     MX = 20 : REM Max Pattern Length
     DIM PA%(MX) : REM Pattern Array
-    RD% = RND(-TI) : REM re-seed the random generator
     DIM CC%(3,3) : REM Cell Colours
     CB% = 0 : REM Colourblind Mode Off
     FS% = 300 : REM Default Flash Delay Setting - FD% is the delay variable
@@ -143,6 +142,7 @@ Restart:
     SC% = 0
     HA% = 3 : REM Hints Available
     HU% = 0 : REM Hint Used This Round
+    RD% = RND(-TI) : REM re-seed the random generator
 
     PRINT "{clr}{home}"
     GOSUB Game_Screen__Simon_Logo
