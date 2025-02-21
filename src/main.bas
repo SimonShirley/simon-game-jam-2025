@@ -52,7 +52,7 @@ Stop_Sound:
     RETURN
 
 Wait_Delay:
-    FOR J = 0 TO FD% : NEXT J : RETURN
+    FOR DL = 0 TO FD% : NEXT DL : RETURN
 
 Flash_Sprite:
     IF CM% AND SO% THEN Flash_Sprite__Start_Sound
@@ -607,6 +607,7 @@ Print_Loop:
     PRINT "   ";
     FOR I = 0 TO PL - 1
     PRINT KK$(PA%(PC));" ";
+    SN% = PA%(PC) : GOSUB Flash_Sprite
     PC = PC + 1
     NEXT I
     PRINT
