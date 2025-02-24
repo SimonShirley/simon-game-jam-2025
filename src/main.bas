@@ -144,7 +144,6 @@ Initialise_Sound:
     SR = 54272 : REM SID BASE ADDRESS
     FOR I = SR TO SR + 24 : POKE I,0 : NEXT : REM Reset SID
     POKE SR + 5,9 : POKE SR + 6,0 : REM SET ADSR ENVELOPE
-    POKE SR + 24,15 : REM SET MAX VOLUME
 
 Initialise_Win_Jingle:
     REM Initialise Win Jingle
@@ -179,6 +178,7 @@ Restart:
     HA% = 3 : REM Hints Available
     HU% = 0 : REM Hint Used This Round
     RD% = RND(-TI) : REM re-seed the random generator
+    POKE SR + 24,15 : REM SET MAX VOLUME
 
     PRINT "{clr}{home}"
     
@@ -488,14 +488,20 @@ Game_Screen__Title_Screen:
 
     CB% = TC% : REM Restore Colourblind Setting
 
+    FD% = 100 : REM Set Flash Delay
+    POKE SR + 24,0 : REM Set Zero Volume
+
 
 Wait__Title_Screen:
     REM Wait Title Screen Loop
-    GET K$ : IF K$ = "" THEN Wait__Title_Screen : REM Wait for key
+    GET K$ : REM  Get Keyboard Key
 
     IF K$ = "C" THEN Game_Screen__Credits : REM Credits
     IF K$ = "I" THEN Game_Screen__Instructions : REM Instructions
     IF K$ = "P" THEN Game_Screen__Options : REM Options
+
+    GOSUB Generate_Random : REM Generate Random Sprite Number
+    SN% = RD% : GOSUB Flash_Sprite : REM Flash Sprite
     
     GOTO Wait__Title_Screen : REM Title Screen Wait Loop
 
