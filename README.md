@@ -60,6 +60,8 @@ Mount the d64 image into your Commodore's disk drive (which is usually device 8)
 
 `LOAD "*",8,1`
 
+At the `READY` prompt, type `RUN` and press `RETURN`.
+
 ## Credits
 Special thanks go to **DeadSheppy**, **Oberon** and **Sabbath** for supporting me in the creation of the game, for advice on what game modes to include and for testing the game.
 
