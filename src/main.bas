@@ -478,7 +478,7 @@ Game_Screen__Title_Screen:
     PRINT "   C - Credits"
     PRINT
     PRINT
-    PRINT "   {grey}Jan-Feb 2025";
+    PRINT "   {grey}Jan-Mar 2025";
 
     TC% = CB% : REM Temp Colourblind setting
     CB% = 0 : GOSUB Set_Cell_Colours : REM Set Cell Colours
